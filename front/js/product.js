@@ -1,6 +1,14 @@
+/* * * * * * * * * * * * * * * * * * *
+ *  Récupérer récupérer la valeur    *
+ *       de la variable "id" de      *
+ *          l'URL courante           *
+ * * * * * * * * * * * * * * * * * * */
 const id = new URL(window.location.href).searchParams.get("id");
 console.log(id);
 
+/* * * * * * * * * * * * * * * * * * *
+ *  Récupérer les données de l'API   *
+ * * * * * * * * * * * * * * * * * * */
 function callApi() {
   return fetch("http://localhost:3000/api/products/" + id)
     .then(function (res) {
@@ -9,14 +17,18 @@ function callApi() {
       }
     })
     .then(function (resultatApi) {
-      console.log(resultatApi);
       return resultatApi;
+      console.log(resultatApi);
     })
     .catch(function (err) {
       console.log("erreur : " + err);
     });
 }
 
+/* * * * * * * * * * * * * * * * * * * * *
+ *   Créer chaque éléments à afficher    *
+ *    à partir des données de l'API      *
+ * * * * * * * * * * * * * * * * * * * * */
 function createProduct(products) {
   const itemImg = document.getElementsByClassName("item__img");
   const firstItemImg = itemImg[0];
@@ -48,6 +60,10 @@ function createProduct(products) {
   }
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *   Fonction qui attend le résultat de la     *
+ *    promise pour appeler "createProduct"     *
+ * * * * * * * * * * * * * * * * * * * * * * * */
 async function viewProduct() {
   const sofas = await callApi();
 
@@ -55,18 +71,24 @@ async function viewProduct() {
   createProduct(sofas);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * *
+ *    Appel de la fonction pour afficher     *
+ *            les éléments créer             *
+ * * * * * * * * * * * * * * * * * * * * * * */
 viewProduct();
 
-/*const color = document.getElementsByTagName("option");
-console.log(color);
-const number = document.getElementById("quantity");
-console.log(number.value);
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *     Récupérer les données couleur et        *
+ *     quantité choisis par l'utilisateur      *
+ * * * * * * * * * * * * * * * * * * * * * * * */
+async function recoverData() {
+  const sofas = await callApi();
 
-const panier = document.getElementById("addToCart");
+  const color = document.getElementById("colors");
+  const choiceColor = color.addEventListener("change", function () {
+    color.options[color.selectedIndex].value;
+  });
+  console.log(choiceColor);
+}
 
-const number = document.getElement;
-panier.addEventListener("click", function (check) {
-  if (color.value == "" && number.value == 0) {
-    panier.style.color = "red";
-  }
-});*/
+recoverData();

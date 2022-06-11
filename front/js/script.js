@@ -1,3 +1,6 @@
+/* * * * * * * * * * * * * * * * * * *
+ *  Récupérer les données de l'API   *
+ * * * * * * * * * * * * * * * * * * */
 function callApi() {
   return fetch("http://localhost:3000/api/products/")
     .then(function (res) {
@@ -14,6 +17,10 @@ function callApi() {
     });
 }
 
+/* * * * * * * * * * * * * * * * * * *
+ *  Créer l'item produits à partir   *
+ *       des données de l'API        *
+ * * * * * * * * * * * * * * * * * * */
 function createSofa(products) {
   const product = document.getElementById("items");
 
@@ -40,6 +47,11 @@ function createSofa(products) {
   titleProduct.textContent = products.description;
 }
 
+/* * * * * * * * * * * * * * * * * * *
+ *  Fonction qui attend le résultat  *
+ *      de la promise a chaque       *
+ *          boucle produits          *
+ * * * * * * * * * * * * * * * * * * */
 async function viewAllProducts() {
   const sofas = await callApi();
 
@@ -49,4 +61,8 @@ async function viewAllProducts() {
   }
 }
 
+/* * * * * * * * * * * * * * * * * * *
+ *    Appel de la fonction pour      *
+ *        afficher les cards         *
+ * * * * * * * * * * * * * * * * * * */
 viewAllProducts();
