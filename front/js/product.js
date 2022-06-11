@@ -86,9 +86,15 @@ async function recoverData() {
 
   const color = document.getElementById("colors");
   const choiceColor = color.addEventListener("change", function () {
-    color.options[color.selectedIndex].value;
+    localStorage.setItem(
+      "productColor",
+      color.options[color.selectedIndex].value
+    );
   });
-  console.log(choiceColor);
-}
 
+  const quantity = document.getElementById("quantity");
+  const quantityOfProduct = quantity.addEventListener("change", function () {
+    localStorage.setItem("productQuantity", quantity.value); // Obliger d'appuyer sur entrer ou de recliquer autre part
+  });
+}
 recoverData();
