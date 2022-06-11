@@ -96,5 +96,8 @@ async function recoverData() {
   const quantityOfProduct = quantity.addEventListener("change", function () {
     localStorage.setItem("productQuantity", quantity.value); // Obliger d'appuyer sur entrer ou de recliquer autre part
   });
+
+  localStorage.setItem("productId", id);
 }
+
 recoverData();
