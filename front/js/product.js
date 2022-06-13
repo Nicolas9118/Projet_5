@@ -78,9 +78,7 @@ viewProduct();
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
  *     Récupérer les données choisis           *
- *      l'utilisateur sous forme de            *
- *        tableau et les mettrent              *
- *          dans le localStorage               *
+ *        l'utilisateur en objet               *
  * * * * * * * * * * * * * * * * * * * * * * * */
 function recoverData() {
   const color = document.getElementById("colors");
@@ -89,12 +87,38 @@ function recoverData() {
   const quantity = document.getElementById("quantity");
   const quantityOfProduct = quantity.value;
 
-  let selectProduct = [id, choiceColor, quantityOfProduct];
+  const product = {
+    id: id,
+    color: choiceColor,
+    quantity: quantityOfProduct,
+  };
 
-  localStorage.setItem("selectProduct", JSON.stringify(selectProduct));
+  return product;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *      Mettre les objets dans un              *
+ *     tableau dans le localStorage            *
+ * * * * * * * * * * * * * * * * * * * * * * * */
 
 const addBasket = document.getElementById("addToCart");
 addBasket.addEventListener("click", function () {
-  recoverData();
+  let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
+  console.log(selectProduct);
+  const product = recoverData();
+
+  //si mon local storage n'est pas vide alors implémenter mon tableau
+  if (selectProduct == true) {
+    selectProduct.push(product);
+    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+    console.log(selectProduct);
+  }
+
+  //si mon local storage est vide commencer a remplir mon tableau
+  else {
+    selectProduct = [];
+    selectProduct.push(product);
+    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+    console.log(selectProduct);
+  }
 });
