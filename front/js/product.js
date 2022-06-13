@@ -50,7 +50,6 @@ function createProduct(products) {
   console.log(descriptionProduct.textContent);
 
   const colorsOptions = document.getElementById("colors");
-
   for (let i in products.colors) {
     const options = document.createElement("option");
     colorsOptions.appendChild(options);
@@ -78,26 +77,24 @@ async function viewProduct() {
 viewProduct();
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
- *     Récupérer les données couleur et        *
- *     quantité choisis par l'utilisateur      *
+ *     Récupérer les données choisis           *
+ *      l'utilisateur sous forme de            *
+ *        tableau et les mettrent              *
+ *          dans le localStorage               *
  * * * * * * * * * * * * * * * * * * * * * * * */
-async function recoverData() {
-  const sofas = await callApi();
-
+function recoverData() {
   const color = document.getElementById("colors");
-  const choiceColor = color.addEventListener("change", function () {
-    localStorage.setItem(
-      "productColor",
-      color.options[color.selectedIndex].value
-    );
-  });
+  const choiceColor = color.options[color.selectedIndex].value;
 
   const quantity = document.getElementById("quantity");
-  const quantityOfProduct = quantity.addEventListener("change", function () {
-    localStorage.setItem("productQuantity", quantity.value); // Obliger d'appuyer sur entrer ou de recliquer autre part
-  });
+  const quantityOfProduct = quantity.value;
 
-  localStorage.setItem("productId", id);
+  let selectProduct = [id, choiceColor, quantityOfProduct];
+
+  localStorage.setItem("selectProduct", JSON.stringify(selectProduct));
 }
 
-recoverData();
+const addBasket = document.getElementById("addToCart");
+addBasket.addEventListener("click", function () {
+  recoverData();
+});
