@@ -86,11 +86,12 @@ function recoverData() {
 
   const quantity = document.getElementById("quantity");
   const quantityOfProduct = quantity.value;
+  console.log(typeof quantityOfProduct);
 
   const product = {
     id: id,
     color: choiceColor,
-    quantity: quantityOfProduct,
+    quantity: parseInt(quantityOfProduct, 10),
   };
 
   return product;
@@ -104,14 +105,42 @@ function recoverData() {
 const addBasket = document.getElementById("addToCart");
 addBasket.addEventListener("click", function () {
   let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
+  let verif = 0;
+  let boucleNumber = 0;
+
   console.log(selectProduct);
   const product = recoverData();
 
-  //si mon local storage n'est pas vide alors implémenter mon tableau
-  if (selectProduct == true) {
+  //test de la vérification si produit existe dans le localStorage
+  //et sur quelle case du tableau est le produit identique
+  for (let i in selectProduct) {
+    if (
+      selectProduct[i].id == product.id &&
+      selectProduct[i].color == product.color
+    ) {
+      verif++;
+      break;
+    } else {
+      boucleNumber++;
+      console.log(boucleNumber);
+    }
+  }
+
+  // mais si mon id && ma color est identique à ma nouvelle entrée
+  // alors ajouter modifié juste ma quantité
+  if (selectProduct && verif > 0) {
+    JSON.parse((selectProduct[boucleNumber].quantity += product.quantity));
+    console.log(selectProduct[boucleNumber].quantity);
+    console.log("doublons !!!!!!!");
+    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+  }
+
+  //si mon local storage n'est pas vide et que mon id est != de ma nouvelle entrée
+  // alors implémenter mon tableau
+  else if (selectProduct) {
     selectProduct.push(product);
     localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-    console.log(selectProduct);
+    console.log("pas de doublons");
   }
 
   //si mon local storage est vide commencer a remplir mon tableau
