@@ -80,7 +80,7 @@ viewProduct();
  *     Récupérer les données choisis           *
  *        l'utilisateur en objet               *
  * * * * * * * * * * * * * * * * * * * * * * * */
-function recoverData() {
+function recoverData(products) {
   const color = document.getElementById("colors");
   const choiceColor = color.options[color.selectedIndex].value;
 
@@ -89,6 +89,11 @@ function recoverData() {
   console.log(typeof quantityOfProduct);
 
   const product = {
+    altTxt: products.altTxt,
+    description: products.description,
+    imgUrl: products.imageUrl,
+    name: products.name,
+    price: products.price,
     id: id,
     color: choiceColor,
     quantity: parseInt(quantityOfProduct, 10),
@@ -103,16 +108,15 @@ function recoverData() {
  * * * * * * * * * * * * * * * * * * * * * * * */
 
 const addBasket = document.getElementById("addToCart");
-addBasket.addEventListener("click", function () {
+addBasket.addEventListener("click", async function () {
+  const sofas = await callApi();
   let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
   let verif = 0;
   let boucleNumber = 0;
 
   console.log(selectProduct);
-  const product = recoverData();
+  const product = recoverData(sofas);
 
-  //test de la vérification si produit existe dans le localStorage
-  //et sur quelle case du tableau est le produit identique
   for (let i in selectProduct) {
     if (
       selectProduct[i].id == product.id &&
