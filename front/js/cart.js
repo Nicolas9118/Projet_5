@@ -120,25 +120,54 @@ function basketTotal() {
 
 basketTotal();
 
-// Fonctionne pour seulement le premier article du panier
-const modifyQuantityBasket = document.querySelector("input");
-modifyQuantityBasket.addEventListener("change", function () {
-  //recoverData = mon localStorage
-  const articleParent = modifyQuantityBasket.closest("article");
-  console.log(articleParent);
-  const dataId = articleParent.getAttribute("data-id");
-  console.log(dataId);
-  const dataColor = articleParent.getAttribute("data-color");
-  console.log(dataColor);
-  const newQuantity = modifyQuantityBasket.value;
-  console.log(newQuantity);
+const modifyQuantityBasket = document.querySelectorAll("article input");
+modifyQuantityBasket.forEach((input) => {
+  input.addEventListener("change", function () {
+    //recoverData = mon localStorage
+    const articleParent = input.closest("article");
+    console.log(articleParent);
+    const dataId = articleParent.getAttribute("data-id");
+    console.log(dataId);
+    const dataColor = articleParent.getAttribute("data-color");
+    console.log(dataColor);
+    const newQuantity = input.value;
+    console.log(newQuantity);
 
-  for (let i in recoverData) {
-    if (dataId == recoverData[i].id && dataColor == recoverData[i].color) {
-      console.log("on rentre dans la condition");
-      recoverData[i].quantity = newQuantity;
-      localStorage.setItem("productSelected", JSON.stringify(recoverData));
-      basketTotal();
+    for (let i in recoverData) {
+      if (dataId == recoverData[i].id && dataColor == recoverData[i].color) {
+        console.log("on rentre dans la condition");
+        recoverData[i].quantity = newQuantity;
+        localStorage.setItem("productSelected", JSON.stringify(recoverData));
+        basketTotal();
+      }
     }
-  }
+  });
+});
+
+const deleteItemBasket = document.querySelectorAll(
+  "article div.cart__item__content__settings__delete p"
+);
+console.log(deleteItemBasket);
+deleteItemBasket.forEach((input) => {
+  input.addEventListener("click", function () {
+    //recoverData = mon localStorage
+    const articleParent = input.closest("article");
+    console.log(articleParent);
+    const dataId = articleParent.getAttribute("data-id");
+    console.log(dataId);
+    const dataColor = articleParent.getAttribute("data-color");
+    console.log(dataColor);
+
+    for (let i in recoverData) {
+      if (dataId == recoverData[i].id && dataColor == recoverData[i].color) {
+        console.log("on va supprimer");
+        const deleteItem = recoverData.splice(i, 1);
+        localStorage.setItem("productSelected", JSON.stringify(recoverData));
+        basketTotal();
+        break;
+      }
+    }
+
+    location.reload();
+  });
 });
