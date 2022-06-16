@@ -100,13 +100,13 @@ for (let i in recoverData) {
   createSofa(i);
 }
 
-function basketPrice() {
+function basketTotal() {
   let quantityTotal = 0;
   let priceTotal = 0;
   let pricePerSofas = 0;
 
   for (let i in recoverData) {
-    quantityTotal += recoverData[i].quantity;
+    quantityTotal += parseInt(recoverData[i].quantity, 10);
     pricePerSofas = recoverData[i].quantity * recoverData[i].price;
     priceTotal += pricePerSofas;
   }
@@ -118,34 +118,27 @@ function basketPrice() {
   spanTotalPrice.textContent = priceTotal;
 }
 
-basketPrice();
+basketTotal();
 
-// quand je change la quantité je modifie la quantité du localStorage
-//=> j'écoute "itemQuantity" a chaque changement => modifier la quantité du localStorage
-//J'écoute mes inputs
-const modifyBasket = document.querySelector("input");
-modifyBasket.addEventListener("change", function () {
+// Fonctionne pour seulement le premier article du panier
+const modifyQuantityBasket = document.querySelector("input");
+modifyQuantityBasket.addEventListener("change", function () {
   //recoverData = mon localStorage
-  const articleParent = modifyBasket.closest("article");
+  const articleParent = modifyQuantityBasket.closest("article");
   console.log(articleParent);
   const dataId = articleParent.getAttribute("data-id");
   console.log(dataId);
   const dataColor = articleParent.getAttribute("data-color");
   console.log(dataColor);
-  const newQuantity = modifyBasket.getAttribute("value");
-  console.log(newQuantity); //pourquoi la valeur de mon input change pas quand j'écrit un autre chiffre ?
+  const newQuantity = modifyQuantityBasket.value;
+  console.log(newQuantity);
 
-  /*if (dataId == recoverData[0].id && dataColor == recoverData[0].color) {
-    console.log("on rentre dans la condition");
-
-    localStorage.setItem("productSelected", JSON.stringify(recoverData));
-  }*/
+  for (let i in recoverData) {
+    if (dataId == recoverData[i].id && dataColor == recoverData[i].color) {
+      console.log("on rentre dans la condition");
+      recoverData[i].quantity = newQuantity;
+      localStorage.setItem("productSelected", JSON.stringify(recoverData));
+      basketTotal();
+    }
+  }
 });
-
-//si la valeur de mon input change alors modifié mon localStorage
-// pour savoir quelle ligne modifié ?
-// => vérifié data-id et data-color du parent de l'input
-// boucle for pour vérifié condition de chaque ligne
-// si data-id == recoverData.id[] && data-color == recoverData.color[]
-// alors modifié la valeur de quantité dans le localStorage et sortir de la boule
-// sinon refaire un tour de boucle
