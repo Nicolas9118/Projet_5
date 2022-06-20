@@ -10,19 +10,21 @@ console.log(id);
  *  Récupérer les données de l'API   *
  * * * * * * * * * * * * * * * * * * */
 function callApi() {
-  return fetch("http://localhost:3000/api/products/" + id)
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-    .then(function (resultatApi) {
+  return (
+    fetch("http://localhost:3000/api/products/" + id)
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      /*.then(function (resultatApi) {
       return resultatApi;
       console.log(resultatApi);
-    })
-    .catch(function (err) {
-      console.log("erreur : " + err);
-    });
+    })*/
+      .catch(function (err) {
+        console.log("erreur : " + err);
+      })
+  );
 }
 
 /* * * * * * * * * * * * * * * * * * * * *
@@ -70,12 +72,6 @@ async function viewProduct() {
   createProduct(sofas);
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * *
- *    Appel de la fonction pour afficher     *
- *            les éléments créer             *
- * * * * * * * * * * * * * * * * * * * * * * */
-viewProduct();
-
 /* * * * * * * * * * * * * * * * * * * * * * * *
  *     Récupérer les données choisis           *
  *        l'utilisateur en objet               *
@@ -84,21 +80,14 @@ function recoverData(products) {
   const color = document.getElementById("colors");
   const choiceColor = color.options[color.selectedIndex].value;
 
-  const quantity = document.getElementById("quantity");
-  const quantityOfProduct = quantity.value;
-  console.log(typeof quantityOfProduct);
+  const quantityOfProduct = document.getElementById("quantity").value;
 
   const product = {
-    altTxt: products.altTxt,
-    description: products.description,
-    imgUrl: products.imageUrl,
-    name: products.name,
-    price: products.price,
     id: id,
     color: choiceColor,
     quantity: parseInt(quantityOfProduct, 10),
   };
-
+  console.log(product);
   return product;
 }
 
@@ -106,52 +95,68 @@ function recoverData(products) {
  *      Mettre les objets dans un              *
  *     tableau dans le localStorage            *
  * * * * * * * * * * * * * * * * * * * * * * * */
+function addLocalStorage() {
+  const addBasket = document.getElementById("addToCart");
+  addBasket.addEventListener("click", async function () {
+    const sofas = await callApi();
+    const product = recoverData(sofas);
 
-const addBasket = document.getElementById("addToCart");
-addBasket.addEventListener("click", async function () {
-  const sofas = await callApi();
-  let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
-  let verif = 0;
-  let boucleNumber = 0;
-
-  console.log(selectProduct);
-  const product = recoverData(sofas);
-
-  for (let i in selectProduct) {
-    if (
-      selectProduct[i].id == product.id &&
-      selectProduct[i].color == product.color
-    ) {
-      verif++;
-      break;
+    // Condition il faut que les deux données soit rempli sinon message d'erreur
+    if (product.color == "" || product.quantity <= 0) {
+      alert(
+        "Veuiilez sélectionner une couleur et une quantité s'il vous plaît."
+      );
     } else {
-      boucleNumber++;
-      console.log(boucleNumber);
+      let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
+
+      // Vérification si mon panier à déjà un même article
+      // si oui savoir sur quelle ligne de mon tableau il est placé
+      let verif = 0;
+      let boucleNumber = 0;
+      for (let i in selectProduct) {
+        if (
+          selectProduct[i].id == product.id &&
+          selectProduct[i].color == product.color
+        ) {
+          verif++;
+          break;
+        } else {
+          boucleNumber++;
+        }
+      }
+
+      // mais si mon id && ma color est identique à ma nouvelle entrée
+      // alors ajouter modifié juste ma quantité
+      if (selectProduct && verif > 0) {
+        JSON.parse((selectProduct[boucleNumber].quantity += product.quantity));
+        console.log(selectProduct[boucleNumber].quantity);
+        console.log("doublons !!!!!!!");
+        localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+      }
+
+      //si mon local storage n'est pas vide et que mon id est != de ma nouvelle entrée
+      // alors implémenter mon tableau
+      else if (selectProduct) {
+        selectProduct.push(product);
+        localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+        console.log("pas de doublons");
+      }
+
+      //si mon local storage est vide commencer a remplir mon tableau
+      else {
+        selectProduct = [];
+        selectProduct.push(product);
+        localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+        console.log(selectProduct);
+      }
     }
-  }
+  });
+}
 
-  // mais si mon id && ma color est identique à ma nouvelle entrée
-  // alors ajouter modifié juste ma quantité
-  if (selectProduct && verif > 0) {
-    JSON.parse((selectProduct[boucleNumber].quantity += product.quantity));
-    console.log(selectProduct[boucleNumber].quantity);
-    console.log("doublons !!!!!!!");
-    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-  }
-
-  //si mon local storage n'est pas vide et que mon id est != de ma nouvelle entrée
-  // alors implémenter mon tableau
-  else if (selectProduct) {
-    selectProduct.push(product);
-    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-    console.log("pas de doublons");
-  }
-
-  //si mon local storage est vide commencer a remplir mon tableau
-  else {
-    selectProduct = [];
-    selectProduct.push(product);
-    localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-    console.log(selectProduct);
-  }
-});
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *    Appel des fonctions :                      *
+ *      - afficher l'item selon l'id             *
+ *      - Ajouter l'objet dans le localStorage   *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+viewProduct();
+addLocalStorage();

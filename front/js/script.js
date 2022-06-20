@@ -2,19 +2,21 @@
  *  Récupérer les données de l'API   *
  * * * * * * * * * * * * * * * * * * */
 function callApi() {
-  return fetch("http://localhost:3000/api/products/")
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-    .then(function (resultatApi) {
+  return (
+    fetch("http://localhost:3000/api/products/")
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      /*.then(function (resultatApi) {
       console.log(resultatApi);
       return resultatApi;
-    })
-    .catch(function (err) {
-      console.log("erreur : " + err);
-    });
+    })*/
+      .catch(function (err) {
+        console.log("erreur : " + err);
+      })
+  );
 }
 
 /* * * * * * * * * * * * * * * * * * *
@@ -43,8 +45,8 @@ function createSofa(products) {
 
   const descriptionProduct = document.createElement("p");
   articleProduct.appendChild(descriptionProduct);
-  titleProduct.classList.add("productDescription");
-  titleProduct.textContent = products.description;
+  descriptionProduct.classList.add("productDescription");
+  descriptionProduct.textContent = products.description;
 }
 
 /* * * * * * * * * * * * * * * * * * *
@@ -54,7 +56,7 @@ function createSofa(products) {
  * * * * * * * * * * * * * * * * * * */
 async function viewAllProducts() {
   const sofas = await callApi();
-
+  console.log(sofas);
   for (let sofa of sofas) {
     console.log(sofa);
     createSofa(sofa);
