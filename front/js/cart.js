@@ -271,6 +271,18 @@ function validForm() {
     const regexLongString = /^[A-Za-z0-9\-\s\é\è\ç\à]{6,50}$/;
     const regexEmail = /^[\w-\.]+@([a-z]+\.)+[a-z]{2,4}$/;
 
+    // => remise a zéro des messages d'erreurs a chaque fois que l'on clique sur le bouton commander
+    const firstNameError = document.getElementById("firstNameErrorMsg");
+    firstNameError.textContent = "";
+    const lastNameError = document.getElementById("lastNameErrorMsg");
+    lastNameError.textContent = "";
+    const adressError = document.getElementById("addressErrorMsg");
+    adressError.textContent = "";
+    const cityError = document.getElementById("cityErrorMsg");
+    cityError.textContent = "";
+    const emailError = document.getElementById("emailErrorMsg");
+    emailError.textContent = "";
+
     console.log(regexString);
     console.log(typeof regexString);
 
@@ -301,27 +313,27 @@ function validForm() {
     else if (
       regexString.test(document.getElementById("firstName").value) == false
     ) {
-      alert("Prénom doit être un mot sans caratères spéciaux sauf '-' et 'é'");
+      firstNameError.textContent = "Le prénom n'est pas valide";
     }
     // => Si le Nom n'est pas correct alors afficher un message d'erreur
     else if (
       regexString.test(document.getElementById("lastName").value) == false
     ) {
-      alert("Nom doit être un mot sans caratères spéciaux sauf '-' et 'é'");
+      lastNameError.textContent = "Le nom n'est pas valide";
     }
     // => Si l'adresse n'est pas correct alors afficher un message d'erreur
     else if (
       regexLongString.test(document.getElementById("address").value) == false
     ) {
-      alert("L'adresse n'est pas valide");
+      adressError.textContent = "L'adresse n'est pas valide";
     }
     // => Si la ville n'est pas correct alors afficher un message d'erreur
     else if (regexString.test(document.getElementById("city").value) == false) {
-      alert("La ville n'est pas valide");
+      cityError.textContent = "La ville n'est pas valide";
     }
     // => Si l'email n'est pas correct alors afficher un message d'erreur
     else if (regexEmail.test(document.getElementById("email").value) == false) {
-      alert("L'email n'est pas valide");
+      emailError.textContent = "L'email n'est pas valide";
     }
   });
 }
