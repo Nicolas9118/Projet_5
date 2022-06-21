@@ -28,7 +28,6 @@ function callLocalStorage() {
   return selectProduct;
 }
 const recoverData = callLocalStorage();
-console.log(recoverData);
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
  *     Créer un tableau avec chaque objet      *
@@ -39,7 +38,7 @@ console.log(recoverData);
 async function recoverAll() {
   const recoverApi = await callApi();
   let j = 0;
-  const recover = [];
+  let recover = [];
 
   for (let i in recoverData) {
     while (recoverData[i].id != recoverApi[j]._id) {
@@ -57,7 +56,7 @@ async function recoverAll() {
       description: recoverApi[j].description,
     };
 
-    recover[i] = sofa;
+    recover.push(sofa);
   }
   return recover;
 }
@@ -147,20 +146,13 @@ function createSofa(rowArray) {
   productDelete.textContent = "Supprimer";
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * *
- *             Appel de la fonction            *
- *          pour chaque ligne du local         *
- * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * *
  *         Appel de la fonction          *
  *       pour chaque ligne du local      *
  * * * * * * * * * * * * * * * * * * * * */
 async function itemBasket() {
   const recover = await recoverAll();
-  console.log(recover);
-  console.log("ItemBasket");
   for (let reco of recover) {
-    console.log(reco);
     createSofa(reco);
   }
 }
@@ -197,7 +189,6 @@ async function basketTotal() {
  * * * * * * * * * * * * * * * * * * * * * * * */
 async function quantityBasket() {
   const modifyQuantityBasket = document.querySelectorAll("article input");
-  console.log(modifyQuantityBasket);
   modifyQuantityBasket.forEach((input) => {
     input.addEventListener("change", function changeQuantityBasket() {
       //recoverData = mon localStorage
@@ -231,7 +222,6 @@ async function deleteBasket() {
   const deleteItemBasket = document.querySelectorAll(
     "article div.cart__item__content__settings__delete p"
   );
-  console.log(deleteItemBasket);
   deleteItemBasket.forEach((input) => {
     input.addEventListener("click", function deleteArticle() {
       //recoverData = mon localStorage
@@ -262,12 +252,14 @@ async function deleteBasket() {
  *         formulaire et les vérifiées         *
  *     et les envoyer dans le localStorage     *
  * * * * * * * * * * * * * * * * * * * * * * * */
-function validForm() {
+async function validForm() {
+  const recover = await recoverAll();
+
   // => Quand je clique sur mon bouton Commander !
   const order = document.getElementById("order");
-  order.addEventListener("click", function recoverDataForm() {
+  order.addEventListener("click", function (event) {
     // => mettre dans une variable mon regex
-    const regexString = /^[A-Za-z\-\é\è\'\-]{3,18}$/;
+    const regexString = /^[A-Za-z\-\é\è\'\-\ï]{3,18}$/;
     const regexLongString = /^[A-Za-z0-9\-\s\é\è\ç\à]{6,50}$/;
     const regexEmail = /^[\w-\.]+@([a-z]+\.)+[a-z]{2,4}$/;
 
@@ -283,11 +275,9 @@ function validForm() {
     const emailError = document.getElementById("emailErrorMsg");
     emailError.textContent = "";
 
-    console.log(regexString);
-    console.log(typeof regexString);
+    // bloqué le changement de page
+    //event.preventDefault();
 
-    console.log(regexString);
-    console.log(typeof regexString);
     // => Si tous les champs sont correct
     if (
       regexString.test(document.getElementById("firstName").value) &&
@@ -296,18 +286,51 @@ function validForm() {
       regexString.test(document.getElementById("city").value) &&
       regexEmail.test(document.getElementById("email").value)
     ) {
-      // => alors mettre les valeurs des champs sans un objet
       alert("Tout est valide");
+      // => alors mettre les valeurs des champs sans un objet
       const contact = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
-        adress: document.getElementById("address").value,
+        address: document.getElementById("address").value,
         city: document.getElementById("city").value,
         email: document.getElementById("email").value,
       };
+
+      // Envoyer mon objet "contact" et mon tableau de string "recover"
+      // dans mon API qui me retournera objet "contact" "recover" et "orderid"
       console.log(contact);
-      // =>  et les envoyer dans le localStorage
-      localStorage.setItem("contact", JSON.stringify(contact));
+      console.log(typeof contact); // objet
+      console.log(recover);
+      console.log(typeof recover); //normalement array mais retourne objet
+      // d'après les réponse sur internet un array est sera toujours un objet de grande valeur
+      const products = recover.map((product) => product.id);
+      console.log(products);
+
+      let reponse = fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contact, products }),
+      })
+        .then(function (res) {
+          if (res.ok) {
+            return res.json();
+            console.log(res);
+          }
+        })
+        .then(function (data) {
+          console.log(data);
+          localStorage.setItem("order", JSON.stringify(data));
+          //document.location = "confirmation.html + id";
+        })
+        .catch(function (err) {
+          console.log("erreur : " + err);
+        });
+
+      console.log(reponse);
+
+      event.preventDefault();
     }
     // => Si le Prénom n'est pas correct alors afficher un message d'erreur
     else if (
@@ -347,5 +370,5 @@ function validForm() {
   await basketTotal();
   await quantityBasket();
   await deleteBasket();
-  validForm();
+  await validForm();
 })();
