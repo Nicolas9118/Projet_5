@@ -37,10 +37,10 @@ const recoverData = callLocalStorage();
  * * * * * * * * * * * * * * * * * * * * * * * */
 async function recoverAll() {
   const recoverApi = await callApi();
-  let j = 0;
   let recover = [];
 
   for (let i in recoverData) {
+    let j = 0;
     while (recoverData[i].id != recoverApi[j]._id) {
       j++;
     }
@@ -252,17 +252,72 @@ async function deleteBasket() {
  *         formulaire et les vérifiées         *
  *     et les envoyer dans le localStorage     *
  * * * * * * * * * * * * * * * * * * * * * * * */
+function verifForm() {
+  // => mettre dans une variable mon regex
+  const regexString = /^[A-Za-z\-\é\è\'\-\¨]{3,18}$/;
+  const regexLongString = /^[A-Za-z0-9\-\s\é\è\ç\à]{6,50}$/;
+  const regexEmail = /^[\w-\.]+@([a-z]+\.)+[a-z]{2,4}$/;
+
+  if (
+    regexString.test(document.getElementById("firstName").value) &&
+    regexString.test(document.getElementById("lastName").value) &&
+    regexLongString.test(document.getElementById("address").value) &&
+    regexString.test(document.getElementById("city").value) &&
+    regexEmail.test(document.getElementById("email").value)
+  ) {
+    return true;
+  } else if (
+    regexString.test(document.getElementById("firstName").value) == false
+  ) {
+    firstNameError.textContent = "Le prénom n'est pas valide";
+  }
+  // => Si le Nom n'est pas correct alors afficher un message d'erreur
+  else if (
+    regexString.test(document.getElementById("lastName").value) == false
+  ) {
+    lastNameError.textContent = "Le nom n'est pas valide";
+  }
+  // => Si l'adresse n'est pas correct alors afficher un message d'erreur
+  else if (
+    regexLongString.test(document.getElementById("address").value) == false
+  ) {
+    adressError.textContent = "L'adresse n'est pas valide";
+  }
+  // => Si la ville n'est pas correct alors afficher un message d'erreur
+  else if (regexString.test(document.getElementById("city").value) == false) {
+    cityError.textContent = "La ville n'est pas valide";
+  }
+  // => Si l'email n'est pas correct alors afficher un message d'erreur
+  else if (regexEmail.test(document.getElementById("email").value) == false) {
+    emailError.textContent = "L'email n'est pas valide";
+  }
+}
+function sendApi(contact, products) {
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ contact, products }),
+  })
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .then(function (data) {
+      //localStorage.clear();
+      document.location = "confirmation.html?orderId=" + data.orderId;
+    })
+    .catch(function (err) {
+      console.log("erreur : " + err);
+    });
+}
+
 async function validForm() {
   const recover = await recoverAll();
-
-  // => Quand je clique sur mon bouton Commander !
   const order = document.getElementById("order");
   order.addEventListener("click", function (event) {
-    // => mettre dans une variable mon regex
-    const regexString = /^[A-Za-z\-\é\è\'\-\ï]{3,18}$/;
-    const regexLongString = /^[A-Za-z0-9\-\s\é\è\ç\à]{6,50}$/;
-    const regexEmail = /^[\w-\.]+@([a-z]+\.)+[a-z]{2,4}$/;
-
     // => remise a zéro des messages d'erreurs a chaque fois que l'on clique sur le bouton commander
     const firstNameError = document.getElementById("firstNameErrorMsg");
     firstNameError.textContent = "";
@@ -275,17 +330,8 @@ async function validForm() {
     const emailError = document.getElementById("emailErrorMsg");
     emailError.textContent = "";
 
-    // bloqué le changement de page
-    //event.preventDefault();
-
     // => Si tous les champs sont correct
-    if (
-      regexString.test(document.getElementById("firstName").value) &&
-      regexString.test(document.getElementById("lastName").value) &&
-      regexLongString.test(document.getElementById("address").value) &&
-      regexString.test(document.getElementById("city").value) &&
-      regexEmail.test(document.getElementById("email").value)
-    ) {
+    if (verifForm()) {
       alert("Tout est valide");
       // => alors mettre les valeurs des champs sans un objet
       const contact = {
@@ -296,67 +342,11 @@ async function validForm() {
         email: document.getElementById("email").value,
       };
 
-      // Envoyer mon objet "contact" et mon tableau de string "recover"
-      // dans mon API qui me retournera objet "contact" "recover" et "orderid"
-      console.log(contact);
-      console.log(typeof contact); // objet
-      console.log(recover);
-      console.log(typeof recover); //normalement array mais retourne objet
-      // d'après les réponse sur internet un array est sera toujours un objet de grande valeur
+      // création d'un array avec tous les IDs des produits dans le panier
       const products = recover.map((product) => product.id);
       console.log(products);
 
-      let reponse = fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ contact, products }),
-      })
-        .then(function (res) {
-          if (res.ok) {
-            return res.json();
-            console.log(res);
-          }
-        })
-        .then(function (data) {
-          console.log(data);
-          localStorage.setItem("order", JSON.stringify(data));
-          //document.location = "confirmation.html + id";
-        })
-        .catch(function (err) {
-          console.log("erreur : " + err);
-        });
-
-      console.log(reponse);
-
-      event.preventDefault();
-    }
-    // => Si le Prénom n'est pas correct alors afficher un message d'erreur
-    else if (
-      regexString.test(document.getElementById("firstName").value) == false
-    ) {
-      firstNameError.textContent = "Le prénom n'est pas valide";
-    }
-    // => Si le Nom n'est pas correct alors afficher un message d'erreur
-    else if (
-      regexString.test(document.getElementById("lastName").value) == false
-    ) {
-      lastNameError.textContent = "Le nom n'est pas valide";
-    }
-    // => Si l'adresse n'est pas correct alors afficher un message d'erreur
-    else if (
-      regexLongString.test(document.getElementById("address").value) == false
-    ) {
-      adressError.textContent = "L'adresse n'est pas valide";
-    }
-    // => Si la ville n'est pas correct alors afficher un message d'erreur
-    else if (regexString.test(document.getElementById("city").value) == false) {
-      cityError.textContent = "La ville n'est pas valide";
-    }
-    // => Si l'email n'est pas correct alors afficher un message d'erreur
-    else if (regexEmail.test(document.getElementById("email").value) == false) {
-      emailError.textContent = "L'email n'est pas valide";
+      sendApi(contact, products);
     }
   });
 }

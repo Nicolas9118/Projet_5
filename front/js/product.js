@@ -1,8 +1,7 @@
-/* * * * * * * * * * * * * * * * * * *
- *  Récupérer récupérer la valeur    *
- *       de la variable "id" de      *
- *          l'URL courante           *
- * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * *
+ *  Récupérer récupérer la valeur de la    *
+ *  variable "orderId" de l'URL courante   *
+ * * * * * * * * * * * * * * * * * * * * * */
 const id = new URL(window.location.href).searchParams.get("id");
 console.log(id);
 

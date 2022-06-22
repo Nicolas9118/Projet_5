@@ -2,21 +2,15 @@
  *  Récupérer les données de l'API   *
  * * * * * * * * * * * * * * * * * * */
 function callApi() {
-  return (
-    fetch("http://localhost:3000/api/products/")
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      /*.then(function (resultatApi) {
-      console.log(resultatApi);
-      return resultatApi;
-    })*/
-      .catch(function (err) {
-        console.log("erreur : " + err);
-      })
-  );
+  return fetch("http://localhost:3000/api/products/")
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .catch(function (err) {
+      console.log("erreur : " + err);
+    });
 }
 
 /* * * * * * * * * * * * * * * * * * *
