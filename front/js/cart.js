@@ -319,7 +319,7 @@ function sendApi(contact, products) {
       }
     })
     .then(function (data) {
-      //localStorage.clear();
+      //localStorage.clear();    en commentaire pour simplifier les tests
       document.location = "confirmation.html?orderId=" + data.orderId;
     })
     .catch(function (err) {

@@ -9,21 +9,15 @@ console.log(id);
  *  Récupérer les données de l'API   *
  * * * * * * * * * * * * * * * * * * */
 function callApi() {
-  return (
-    fetch("http://localhost:3000/api/products/" + id)
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      /*.then(function (resultatApi) {
-      return resultatApi;
-      console.log(resultatApi);
-    })*/
-      .catch(function (err) {
-        console.log("erreur : " + err);
-      })
-  );
+  return fetch("http://localhost:3000/api/products/" + id)
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .catch(function (err) {
+      console.log("erreur : " + err);
+    });
 }
 
 /* * * * * * * * * * * * * * * * * * * * *
