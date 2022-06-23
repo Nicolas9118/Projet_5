@@ -101,7 +101,7 @@ function addLocalStorage() {
     const product = recoverData(sofas);
 
     // Condition il faut que les deux données soit rempli sinon message d'erreur
-    if (product.color == "" || product.quantity <= 0) {
+    if (product.color == "" || !product.quantity > 0) {
       alert(
         "Veuiilez sélectionner une couleur et une quantité s'il vous plaît."
       );

@@ -248,15 +248,23 @@ async function deleteBasket() {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
- *          Récupérer les données du           *
- *         formulaire et les vérifiées         *
- *     et les envoyer dans le localStorage     *
+ *        Déclarer mes variable erreur         *
+ * * * * * * * * * * * * * * * * * * * * * * * */
+const firstNameError = document.getElementById("firstNameErrorMsg");
+const lastNameError = document.getElementById("lastNameErrorMsg");
+const adressError = document.getElementById("addressErrorMsg");
+const cityError = document.getElementById("cityErrorMsg");
+const emailError = document.getElementById("emailErrorMsg");
+
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *          Vérifier si les champs du          *
+ *           formulaire sont correct           *
  * * * * * * * * * * * * * * * * * * * * * * * */
 function verifForm() {
   // => mettre dans une variable mon regex
-  const regexString = /^[A-Za-z\-\é\è\'\-\¨]{3,18}$/;
-  const regexLongString = /^[A-Za-z0-9\-\s\é\è\ç\à]{6,50}$/;
-  const regexEmail = /^[\w-\.]+@([a-z]+\.)+[a-z]{2,4}$/;
+  const regexString = /^[A-Za-z\-éèçàï ]{2,18}$/;
+  const regexLongString = /^[A-Za-z0-9\-éèçàï ]{2,50}$/;
+  const regexEmail = /^[A-Za-z0-9\.-_]+@[a-z]+\.[a-z]{2,4}$/;
 
   if (
     regexString.test(document.getElementById("firstName").value) &&
@@ -292,6 +300,11 @@ function verifForm() {
     emailError.textContent = "L'email n'est pas valide";
   }
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *      Envoyer les données du formulaire      *
+ *           et du panier à l'API              *
+ * * * * * * * * * * * * * * * * * * * * * * * */
 function sendApi(contact, products) {
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
@@ -314,20 +327,20 @@ function sendApi(contact, products) {
     });
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *             Si verifForm ok alors           *
+ *         créer contact et appel sendApi      *
+ *             sinon afficher erreur           *
+ * * * * * * * * * * * * * * * * * * * * * * * */
 async function validForm() {
   const recover = await recoverAll();
   const order = document.getElementById("order");
   order.addEventListener("click", function (event) {
     // => remise a zéro des messages d'erreurs a chaque fois que l'on clique sur le bouton commander
-    const firstNameError = document.getElementById("firstNameErrorMsg");
     firstNameError.textContent = "";
-    const lastNameError = document.getElementById("lastNameErrorMsg");
     lastNameError.textContent = "";
-    const adressError = document.getElementById("addressErrorMsg");
     adressError.textContent = "";
-    const cityError = document.getElementById("cityErrorMsg");
     cityError.textContent = "";
-    const emailError = document.getElementById("emailErrorMsg");
     emailError.textContent = "";
 
     // => Si tous les champs sont correct
@@ -348,6 +361,8 @@ async function validForm() {
 
       sendApi(contact, products);
     }
+
+    verifForm();
   });
 }
 
