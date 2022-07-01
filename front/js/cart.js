@@ -109,7 +109,7 @@ function createSofa(rowArray) {
   //<p>42,00 €</p>
   const productPrice = document.createElement("p");
   divDescription.appendChild(productPrice);
-  productPrice.textContent = rowArray.price;
+  productPrice.textContent = rowArray.price + " €";
 
   //<div class="cart__item__content__settings">
   const divSettings = document.createElement("div");
@@ -198,15 +198,28 @@ async function quantityBasket() {
       console.log(dataId);
       const dataColor = articleParent.getAttribute("data-color");
       console.log(dataColor);
-      const newQuantity = input.value;
-      console.log(newQuantity);
 
-      for (let i in recoverData) {
-        if (dataId == recoverData[i].id && dataColor == recoverData[i].color) {
-          console.log("on rentre dans la condition");
-          recoverData[i].quantity = newQuantity;
-          localStorage.setItem("productSelected", JSON.stringify(recoverData));
-          basketTotal();
+      if (input.value > 100 || input.value < 1) {
+        alert(
+          "Veuiilez sélectionner une quantité entre 1 et 100 s'il vous plaît."
+        );
+      } else {
+        const newQuantity = input.value;
+        console.log(newQuantity);
+
+        for (let i in recoverData) {
+          if (
+            dataId == recoverData[i].id &&
+            dataColor == recoverData[i].color
+          ) {
+            console.log("on rentre dans la condition");
+            recoverData[i].quantity = newQuantity;
+            localStorage.setItem(
+              "productSelected",
+              JSON.stringify(recoverData)
+            );
+            basketTotal();
+          }
         }
       }
     });
@@ -241,10 +254,31 @@ async function deleteBasket() {
           break;
         }
       }
-
+      /* si productSelected vide alors clear localStorage */
+      if (recoverData.length == 0) {
+        localStorage.clear();
+        location.reload();
+      }
       location.reload();
     });
   });
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * *
+ *             Si panier vide alors            *
+ *             cacher le formulaire            *
+ * * * * * * * * * * * * * * * * * * * * * * * */
+function activeForm() {
+  if (recoverData == null) {
+    console.log("panier vide");
+    form = document.querySelectorAll("form");
+    form.forEach((div) => {
+      div.style.display = "none";
+    });
+    alert(
+      "Panier vide ! Pour valider une commande un article doit être ajouter au panier."
+    );
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
@@ -319,7 +353,7 @@ function sendApi(contact, products) {
       }
     })
     .then(function (data) {
-      //localStorage.clear();    en commentaire pour simplifier les tests
+      localStorage.clear();
       document.location = "confirmation.html?orderId=" + data.orderId;
     })
     .catch(function (err) {
@@ -357,6 +391,7 @@ async function validForm() {
 
       // création d'un array avec tous les IDs des produits dans le panier
       const products = recover.map((product) => product.id);
+
       console.log(products);
 
       sendApi(contact, products);
@@ -372,6 +407,7 @@ async function validForm() {
  * * * * * * * * * * * * * * * * * * * * * * * */
 (async () => {
   await itemBasket();
+  activeForm();
   await basketTotal();
   await quantityBasket();
   await deleteBasket();

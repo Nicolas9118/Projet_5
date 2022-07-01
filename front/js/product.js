@@ -19,7 +19,7 @@ function callApi() {
       console.log("erreur : " + err);
     });
 }
-
+//const sofas = await callApi();
 /* * * * * * * * * * * * * * * * * * * * *
  *   Créer chaque éléments à afficher    *
  *    à partir des données de l'API      *
@@ -60,7 +60,6 @@ function createProduct(products) {
  * * * * * * * * * * * * * * * * * * * * * * * */
 async function viewProduct() {
   const sofas = await callApi();
-
   console.log(sofas);
   createProduct(sofas);
 }
@@ -95,9 +94,12 @@ function addLocalStorage() {
     const product = recoverData(sofas);
 
     // Condition il faut que les deux données soit rempli sinon message d'erreur
-    if (product.color == "" || !product.quantity > 0) {
+    if (
+      product.color == "" ||
+      !(product.quantity < 100 && product.quantity >= 1)
+    ) {
       alert(
-        "Veuiilez sélectionner une couleur et une quantité s'il vous plaît."
+        "Veuiilez sélectionner une couleur et une quantité entre 1 et 100 s'il vous plaît."
       );
     } else {
       let selectProduct = JSON.parse(localStorage.getItem("productSelected"));
@@ -122,9 +124,9 @@ function addLocalStorage() {
       // alors ajouter modifié juste ma quantité
       if (selectProduct && verif > 0) {
         JSON.parse((selectProduct[boucleNumber].quantity += product.quantity));
-        console.log(selectProduct[boucleNumber].quantity);
-        console.log("doublons !!!!!!!");
         localStorage.setItem("productSelected", JSON.stringify(selectProduct));
+
+        alert("Produit ajouté au panier");
       }
 
       //si mon local storage n'est pas vide et que mon id est != de ma nouvelle entrée
@@ -132,7 +134,8 @@ function addLocalStorage() {
       else if (selectProduct) {
         selectProduct.push(product);
         localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-        console.log("pas de doublons");
+
+        alert("Produit ajouté au panier");
       }
 
       //si mon local storage est vide commencer a remplir mon tableau
@@ -140,7 +143,8 @@ function addLocalStorage() {
         selectProduct = [];
         selectProduct.push(product);
         localStorage.setItem("productSelected", JSON.stringify(selectProduct));
-        console.log(selectProduct);
+
+        alert("Produit ajouté au panier");
       }
     }
   });
