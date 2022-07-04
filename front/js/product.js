@@ -19,7 +19,7 @@ function callApi() {
       console.log("erreur : " + err);
     });
 }
-//const sofas = await callApi();
+
 /* * * * * * * * * * * * * * * * * * * * *
  *   Créer chaque éléments à afficher    *
  *    à partir des données de l'API      *

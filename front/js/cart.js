@@ -350,11 +350,14 @@ function sendApi(contact, products) {
     .then(function (res) {
       if (res.ok) {
         return res.json();
+      } else {
+        throw new Error("Response was not ok : " + res.status);
       }
     })
     .then(function (data) {
-      localStorage.clear();
       document.location = "confirmation.html?orderId=" + data.orderId;
+      //window.location.replace(`confirmation.html?orderId=${datas.orderId}`);
+      localStorage.clear();
     })
     .catch(function (err) {
       console.log("erreur : " + err);
@@ -370,6 +373,7 @@ async function validForm() {
   const recover = await recoverAll();
   const order = document.getElementById("order");
   order.addEventListener("click", function (event) {
+    event.preventDefault();
     // => remise a zéro des messages d'erreurs a chaque fois que l'on clique sur le bouton commander
     firstNameError.textContent = "";
     lastNameError.textContent = "";
